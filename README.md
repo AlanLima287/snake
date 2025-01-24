@@ -6,6 +6,10 @@
 
 This is a small project that features the classic snake game, it was developed in x86 Assembly, using the [Netwide Assembler (NASM)](https://www.nasm.org) to assemble the assembly code to a raw binary format.
 
+## Requirements
+
+To assemble, the [Netwide Assembler (NASM)](https://www.nasm.org) has already been mentioned, to run the generated binary, [QEMU](https://www.qemu.org/) is recomended, more specifically the x86_64 system emulator.
+
 ## Defining the field
 
 The main logic of the aplication will operate upon an array that represents the entire field whereas the snake can walk (or rather crawls). An important transformation that will be required is the transformation from actual coordinates (on the screen) to an index in the array. Given that the field is a rectangle with integer coordinates comprehended by the pairs $`[a, b] \times [c, d]`$, with $`a \le b`$ and $`c \le d`$, follows, for $`(y, x) \in [a, b] \times [c, d]`$:

@@ -1,24 +1,24 @@
 [BITS 16]
 [ORG 0x7C00]
 
-SECTOR_COUNT equ 0x04
+SECTOR_COUNT equ 0x07
 
-LWALL equ 0x16
-UWALL equ 0x06
-RWALL equ 0x39
-DWALL equ 0x12
+; LWALL equ 0x16
+; UWALL equ 0x06
+; RWALL equ 0x39
+; DWALL equ 0x12
 
-; LWALL equ 0x01
-; UWALL equ 0x01
-; RWALL equ 0x4E
-; DWALL equ 0x17
+LWALL equ 0x01
+UWALL equ 0x01
+RWALL equ 0x4E
+DWALL equ 0x17
 
 VSIZE equ DWALL - UWALL + 1
 HSIZE equ RWALL - LWALL + 1
 
 FIELD_SIZE equ VSIZE * HSIZE
 
-STARTING_SIZE equ 7
+STARTING_SIZE equ 3
 
 LEFT  equ 0x4B
 UP    equ 0x48
@@ -43,9 +43,6 @@ load_sectors:
    mov al, SECTOR_COUNT - 1 ; 1 sector has already been loaded
    mov ah, 0x02             ; read from drive
    int 0x13
-
-   mov ax, 12
-   call print_dec
 
    jnc main
 
@@ -87,8 +84,8 @@ print_hex: ; function print_hex(si num: u16)
    .hex db "0123456789ABCDEF"
 
 print_dec: ; function print_dec(esi num: u16)
-
    xor ecx, ecx
+   xor bh, bh
 
    cmp esi, 0
    setl bl
@@ -110,10 +107,11 @@ print_dec: ; function print_dec(esi num: u16)
       sub esi, eax
       or ecx, esi
 
+      inc bh
       mov esi, edx
 
-   test edx, edx
-   jnz .loop
+      test edx, edx
+      jnz .loop
 
    mov ah, 0x0E
 
@@ -123,13 +121,15 @@ print_dec: ; function print_dec(esi num: u16)
       int 0x10
    
    .print:
+      dec bh
+
       mov al, cl
       and al, 0xF
       add al, '0'
       int 0x10
 
       shr cx, 4
-      test cx, cx
+      test bh, bh
       jnz .print
 
    ret
@@ -172,11 +172,18 @@ main:
    .entry:
       ; puts current timestamp into edx:eax
       rdtsc 
-      ; mov [random.seed], eax
+      mov [random.seed], eax
 
       ; hide cursor
       mov ch, 0x3F
       mov ah, 0x1
+      int 0x10
+
+      ; set the color for the screen
+      mov bh, 0x2E
+      mov cx, (UWALL << 8) | LWALL
+      mov dx, (DWALL << 8) | RWALL
+      mov ax, 0x0600
       int 0x10
 
       ; cursor to (0, 0)
@@ -202,26 +209,19 @@ main:
       int 0x10
    
       call put_fruit
-      ; call draw_full_snake
 
    .loop:
-      ; cursor to (0, 0)
-      xor dx, dx
+      ; cursor to (0, 1)
+      mov dx, 0x0001
       xor bx, bx
       mov ah, 2
       int 0x10
 
-      ; print snake head position
-      mov si, [var.tail]
-      call print_hex
-      
-      mov ax, 0x0E00
-      int 0x10
+      ; print the snake size
+      xor esi, esi
+      mov si, [var.size]
+      call print_dec
 
-      mov si, [var.head]
-      call print_hex
-
-      ; rdtsc
       xor cx, cx
 
       .wait:
@@ -283,6 +283,7 @@ main:
          mov ah, [di]
          cmp ah, FRUIT
          jne .else
+            inc word [var.size]
             call put_fruit
             jmp .esc
          .else:
@@ -438,23 +439,57 @@ game_over:
    mov ax, 0x0600
    int 0x10
 
+   mov dx, 0x1801
+   xor bx, bx
+   mov ah, 2
+   int 0x10
+
+   mov si, .str
+   call print_str
+
 .terminate:
    mov ah, 0
    int 0x16
 
-   cmp al, 0x1B
+   cmp ax, 0x011B
+   je poweroff
+
+   cmp ax, 0x1C0D
    jne .terminate
 
-   call poweroff
+   mov byte [main.tmp_direction], RIGHT
+   mov byte [var.direction], RIGHT
+   mov word [var.tail], (UWALL << 8) | LWALL
+   mov word [var.head], (UWALL << 8) | (LWALL + STARTING_SIZE)
+   mov word [var.size], STARTING_SIZE
+
+   xor bx, bx
+   .body:
+      cmp bx, STARTING_SIZE
+      jge .fill
+      mov byte [bx + snake], RIGHT
+      inc bx
+      jmp .body
+
+   .fill:
+      cmp bx, FIELD_SIZE - STARTING_SIZE
+      jge main
+      mov byte [bx + snake], 0
+      inc bx
+      jmp .fill
+
+   .str:
+      db "Press ESCAPE to poweroff, press RETURN to restart...", 0
 
 var:
    .direction: db RIGHT
    .tail: db LWALL, UWALL
    .head: db LWALL + STARTING_SIZE, UWALL
+   .size: dw STARTING_SIZE
 
 snake:
    times STARTING_SIZE db RIGHT
-   times (FIELD_SIZE - ($ - snake)) db 0
+   times (FIELD_SIZE - STARTING_SIZE) db 0
 
 sleep: ; function sleep(ecx time: u32)
    .entry:
