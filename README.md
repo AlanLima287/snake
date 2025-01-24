@@ -28,9 +28,22 @@ Since the default character grid in a x86 bootloader is $`25`$ ($`19_{16}`$) by 
 
 The snake is defined by two important parts, its _head_ and its _tail_. The head will be the part of the snake that can collide with either the fruit (making the snake grow) or the body of the snake (triggering game over). The tail exists more for rendering porpose, this will be elaborated later.
 
-```asm
-.loop:
-   mov al, 12
-```
+### The body of the snake
 
-[...] WIP
+The body of the snake will be in the array and will account for directionality, that is, the direction the head has moved to will be marked as that direction, the head itself won't have a direction associated with it. The directionality will serve for the tail so it knows where to move after filling the tail, where it was, with zero. Considering the head as `o` and the tail the not ingoing arrow, the following is a valid snake:
+
+|   |   |   |   |   |   |
+| - | - | - | - | - | - |
+| . | . | . | . | . | . |
+| ↓ | . | . | . | → | o |
+| ↓ | . | . | . | ↑ | . |
+| → | → | ↓ | . | ↑ | . |
+| . | . | → | → | ↑ | . |
+
+Moving the snake is simply erasing the tail, following the tail arrow and moving the head accouding to user input.
+
+## Fruits
+
+Fruits are very simple, they are just a different value put in the array, the head will every frame check whether it is over a fruit, if so, the tail doesn't get erased that frame (and a new fruit is place somewhere else randomly), and the head moves normally. Not erasing the tail effectively makes the snake grow.
+
+<!-- [...] WIP -->
