@@ -8,11 +8,11 @@ This is a small project that features the classic snake game, it was developed i
 
 ## Requirements
 
-To assemble, the [Netwide Assembler (NASM)](https://www.nasm.org) has already been mentioned, to run the generated binary, [QEMU](https://www.qemu.org/) is recomended, more specifically the x86_64 system emulator.
+To assemble, the [Netwide Assembler (NASM)](https://www.nasm.org) has already been mentioned, to run the generated binary, [QEMU](https://www.qemu.org/) is recommended, more specifically the x86_64 system emulator.
 
 ## Defining the field
 
-The main logic of the aplication will operate upon an array that represents the entire field whereas the snake can walk (or rather crawls). An important transformation that will be required is the transformation from actual coordinates (on the screen) to an index in the array. Given that the field is a rectangle with integer coordinates comprehended by the pairs $`[a, b] \times [c, d]`$, with $`a \le b`$ and $`c \le d`$, follows, for $`(y, x) \in [a, b] \times [c, d]`$:
+The main logic of the application will operate upon an array that represents the entire field whereas the snake can walk (or rather crawls). An important transformation that will be required is the transformation from actual coordinates (on the screen) to an index in the array. Given that the field is a rectangle with integer coordinates comprehended by the pairs $`[a, b] \times [c, d]`$, with $`a \le b`$ and $`c \le d`$, follows, for $`(y, x) \in [a, b] \times [c, d]`$:
 
 ```math
 (y, x) \longmapsto (y - a) (d - c + 1) + (x - c)
@@ -26,7 +26,7 @@ Since the default character grid in a x86 bootloader is $`25`$ ($`19_{16}`$) by 
 
 ## Defining the snake
 
-The snake is defined by two important parts, its _head_ and its _tail_. The head will be the part of the snake that can collide with either the fruit (making the snake grow) or the body of the snake (triggering game over). The tail exists more for rendering porpose, this will be elaborated later.
+The snake is defined by two important parts, its _head_ and its _tail_. The head will be the part of the snake that can collide with either the fruit (making the snake grow) or the body of the snake (triggering game over). The tail exists more for rendering purpose, this will be elaborated later.
 
 ### The body of the snake
 
@@ -40,7 +40,7 @@ The body of the snake will be in the array and will account for directionality, 
 | → | → | ↓ | . | ↑ | . |
 | . | . | → | → | ↑ | . |
 
-Moving the snake is simply erasing the tail, following the tail arrow and moving the head accouding to user input.
+Moving the snake is simply erasing the tail, following the tail arrow and moving the head according to user input.
 
 ## Fruits
 
