@@ -4,7 +4,7 @@
 
 ## Summary
 
-This is a small project that features the classic snake game, it was developed in x86 Assembly, using the [Netwide Assembler (NASM)](https://www.nasm.org) to assemble the assembly code to a raw binary format.
+This is a small project that features the classic snake game, it was developed in x86 Assembly, using the [Netwide Assembler (NASM)](https://www.nasm.us) to assemble the assembly code to a raw binary format.
 
 ## Requirements
 
