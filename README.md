@@ -8,7 +8,7 @@ This is a small project that features the classic snake game, it was developed i
 
 ## Requirements
 
-To assemble, the [Netwide Assembler (NASM)](https://www.nasm.org) has already been mentioned, to run the generated binary, [QEMU](https://www.qemu.org/) is recommended, more specifically the x86_64 system emulator.
+To assemble, the [Netwide Assembler (NASM)](https://www.nasm.us) has already been mentioned, to run the generated binary, [QEMU](https://www.qemu.org/) is recommended, more specifically the x86_64 system emulator.
 
 ## Defining the field
 
